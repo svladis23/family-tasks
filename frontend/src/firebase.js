@@ -1,17 +1,14 @@
 // Firebase configuration
-// IMPORTANT: Replace these values with your own Firebase project config
-// Get these from: Firebase Console > Project Settings > Your Apps > Web App
-
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAY-OmMEm4xvAfs98RvQWpvGEgBtimCRbE",
+  authDomain: "family-tasks-718cd.firebaseapp.com",
+  projectId: "family-tasks-718cd",
+  storageBucket: "family-tasks-718cd.firebasestorage.app",
+  messagingSenderId: "295129252689",
+  appId: "1:295129252689:web:ab51a3688dac251dea8970"
 };
 
 // Initialize Firebase
