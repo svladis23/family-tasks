@@ -105,7 +105,7 @@ function TodayPage() {
                 <div className="days-display">
                   {task.days_of_week.split(',').map(day => (
                     <span key={day} className="day-tag">
-                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][parseInt(day) - 1]}
+                      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][parseInt(day) - 1]}
                     </span>
                   ))}
                 </div>

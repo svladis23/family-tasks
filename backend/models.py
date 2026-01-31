@@ -44,7 +44,7 @@ class WeeklyTask(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
-    days_of_week = db.Column(db.String(20), nullable=False)  # Comma-separated: "1,3,5" for Mon/Wed/Fri
+    days_of_week = db.Column(db.String(20), nullable=False)  # Comma-separated: "1,3,5" for Sun/Tue/Thu (1=Sun, 5=Thu)
     active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -58,7 +58,7 @@ class WeeklyTask(db.Model):
         }
 
     def is_scheduled_for_day(self, day_number):
-        """Check if task is scheduled for a specific day (1=Monday, 7=Sunday)."""
+        """Check if task is scheduled for a specific day (1=Sunday, 5=Thursday, 6=Friday, 7=Saturday)."""
         days = [int(d) for d in self.days_of_week.split(',') if d]
         return day_number in days
 
@@ -137,11 +137,11 @@ def init_db(app):
             for task in daily_tasks:
                 db.session.add(task)
 
-            # Add sample weekly tasks
+            # Add sample weekly tasks (1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu)
             weekly_tasks = [
-                WeeklyTask(title='Take out trash', days_of_week='1,4'),  # Monday and Thursday
-                WeeklyTask(title='Vacuum living room', days_of_week='3,6'),  # Wednesday and Saturday
-                WeeklyTask(title='Water plants', days_of_week='2,5'),  # Tuesday and Friday
+                WeeklyTask(title='Take out trash', days_of_week='1,4'),  # Sunday and Wednesday
+                WeeklyTask(title='Vacuum living room', days_of_week='3,5'),  # Tuesday and Thursday
+                WeeklyTask(title='Water plants', days_of_week='2,4'),  # Monday and Wednesday
             ]
             for task in weekly_tasks:
                 db.session.add(task)

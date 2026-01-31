@@ -256,8 +256,9 @@ def get_today_tasks():
     """Get all tasks for today with completion status."""
     today = date.today()
     # Python's weekday(): Monday=0, Sunday=6
-    # We want: Monday=1, Sunday=7
-    today_day_number = today.weekday() + 1
+    # We want: Sunday=1, Monday=2, ..., Thursday=5, Friday=6, Saturday=7
+    # Work days are Sunday-Thursday (1-5), weekends are Friday-Saturday (6-7)
+    today_day_number = ((today.weekday() + 1) % 7) + 1
 
     # Get today's completions
     today_completions = TaskCompletion.query.filter_by(completion_date=today).all()

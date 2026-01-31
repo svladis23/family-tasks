@@ -136,7 +136,7 @@ daily_tasks:
 weekly_tasks:
 - id (primary key)
 - title (text)
-- days_of_week (text, e.g., "1,3,5" for Mon/Wed/Fri)
+- days_of_week (text, e.g., "1,3,5" for Sun/Tue/Thu where 1=Sun, 5=Thu)
 - active (boolean)
 - created_at (timestamp)
 
@@ -171,9 +171,11 @@ The database is automatically initialized with:
 - Make bed
 
 **Sample Weekly Tasks:**
-- Take out trash (Mon, Thu)
-- Vacuum living room (Wed, Sat)
-- Water plants (Tue, Fri)
+- Take out trash (Sun, Wed)
+- Vacuum living room (Tue, Thu)
+- Water plants (Mon, Wed)
+
+**Note:** Work week is Sunday-Thursday. Friday and Saturday are weekends.
 
 **Sample Extra Tasks:**
 - Fix bathroom sink (today)

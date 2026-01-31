@@ -2,14 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 const API_BASE = '/api';
 
+// Work week: Sunday-Thursday (1-5), Weekend: Friday-Saturday (6-7)
 const DAYS = [
-  { value: 1, label: 'Mon', fullName: 'Monday' },
-  { value: 2, label: 'Tue', fullName: 'Tuesday' },
-  { value: 3, label: 'Wed', fullName: 'Wednesday' },
-  { value: 4, label: 'Thu', fullName: 'Thursday' },
-  { value: 5, label: 'Fri', fullName: 'Friday' },
-  { value: 6, label: 'Sat', fullName: 'Saturday' },
-  { value: 7, label: 'Sun', fullName: 'Sunday' }
+  { value: 1, label: 'Sun', fullName: 'Sunday' },
+  { value: 2, label: 'Mon', fullName: 'Monday' },
+  { value: 3, label: 'Tue', fullName: 'Tuesday' },
+  { value: 4, label: 'Wed', fullName: 'Wednesday' },
+  { value: 5, label: 'Thu', fullName: 'Thursday' }
 ];
 
 function WeeklyTasksPage() {
