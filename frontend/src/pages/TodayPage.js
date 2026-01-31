@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-
-const API_BASE = '/api';
-
-// User configuration
-const USERS = [
-  { id: 1, name: 'Vlad', className: 'vlad' },
-  { id: 2, name: 'Maayan', className: 'maayan' }
-];
+import { getTodayData, toggleCompletion, completeExtraTask, USERS } from '../services/dataService';
 
 function TodayPage() {
   const [todayData, setTodayData] = useState(null);
@@ -15,9 +8,7 @@ function TodayPage() {
 
   const fetchTodayData = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE}/today`);
-      if (!response.ok) throw new Error('Failed to fetch today data');
-      const data = await response.json();
+      const data = await getTodayData();
       setTodayData(data);
       setError(null);
     } catch (err) {
@@ -33,20 +24,7 @@ function TodayPage() {
 
   const handleToggleCompletion = async (taskType, taskId, userId) => {
     try {
-      const response = await fetch(`${API_BASE}/completions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          task_type: taskType,
-          task_id: taskId,
-          user_id: userId,
-          date: todayData.date
-        })
-      });
-
-      if (!response.ok) throw new Error('Failed to toggle completion');
-
-      // Refresh data
+      await toggleCompletion(taskType, taskId, userId);
       fetchTodayData();
     } catch (err) {
       setError(err.message);
@@ -55,15 +33,7 @@ function TodayPage() {
 
   const handleCompleteExtraTask = async (taskId, userId) => {
     try {
-      const response = await fetch(`${API_BASE}/extra-tasks/${taskId}/complete`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId })
-      });
-
-      if (!response.ok) throw new Error('Failed to complete task');
-
-      // Refresh data
+      await completeExtraTask(taskId, userId);
       fetchTodayData();
     } catch (err) {
       setError(err.message);
@@ -117,8 +87,8 @@ function TodayPage() {
                 {USERS.map(user => (
                   <button
                     key={user.id}
-                    className={`btn btn-sm ${user.className === 'vlad' ? 'btn-primary' : ''}`}
-                    style={user.className === 'maayan' ? { backgroundColor: '#ec4899', color: 'white' } : {}}
+                    className={`btn btn-sm ${user.id === 1 ? 'btn-primary' : ''}`}
+                    style={user.id === 2 ? { backgroundColor: '#ec4899', color: 'white' } : {}}
                     onClick={() => handleCompleteExtraTask(task.id, user.id)}
                   >
                     {user.name}
@@ -130,7 +100,7 @@ function TodayPage() {
                 {USERS.map(user => {
                   const isCompleted = task.completed_by_users?.includes(user.id);
                   return (
-                    <label key={user.id} className={`user-checkbox ${user.className}`}>
+                    <label key={user.id} className={`user-checkbox ${user.id === 1 ? 'vlad' : 'maayan'}`}>
                       <input
                         type="checkbox"
                         checked={isCompleted}

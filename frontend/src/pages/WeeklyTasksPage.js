@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-
-const API_BASE = '/api';
+import { getWeeklyTasks, createWeeklyTask, updateWeeklyTask, deleteWeeklyTask } from '../services/dataService';
 
 // Work week: Sunday-Thursday (1-5), Weekend: Friday-Saturday (6-7)
 const DAYS = [
@@ -22,9 +21,7 @@ function WeeklyTasksPage() {
 
   const fetchTasks = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE}/weekly-tasks`);
-      if (!response.ok) throw new Error('Failed to fetch tasks');
-      const data = await response.json();
+      const data = await getWeeklyTasks();
       setTasks(data);
       setError(null);
     } catch (err) {
@@ -81,20 +78,14 @@ function WeeklyTasksPage() {
     }
 
     try {
-      const url = editingTask
-        ? `${API_BASE}/weekly-tasks/${editingTask.id}`
-        : `${API_BASE}/weekly-tasks`;
-
-      const response = await fetch(url, {
-        method: editingTask ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      if (editingTask) {
+        await updateWeeklyTask(editingTask.id, {
           title: formTitle.trim(),
           days_of_week: formDays.join(',')
-        })
-      });
-
-      if (!response.ok) throw new Error('Failed to save task');
+        });
+      } else {
+        await createWeeklyTask(formTitle.trim(), formDays.join(','));
+      }
 
       closeModal();
       fetchTasks();
@@ -105,14 +96,7 @@ function WeeklyTasksPage() {
 
   const handleToggleActive = async (task) => {
     try {
-      const response = await fetch(`${API_BASE}/weekly-tasks/${task.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ active: !task.active })
-      });
-
-      if (!response.ok) throw new Error('Failed to update task');
-
+      await updateWeeklyTask(task.id, { active: !task.active });
       fetchTasks();
     } catch (err) {
       setError(err.message);
@@ -123,12 +107,7 @@ function WeeklyTasksPage() {
     if (!window.confirm('Are you sure you want to delete this task?')) return;
 
     try {
-      const response = await fetch(`${API_BASE}/weekly-tasks/${taskId}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) throw new Error('Failed to delete task');
-
+      await deleteWeeklyTask(taskId);
       fetchTasks();
     } catch (err) {
       setError(err.message);

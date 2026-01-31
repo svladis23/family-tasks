@@ -1,185 +1,169 @@
 # Family Tasks
 
-A simple task tracker for family members to manage household tasks and track completion statistics.
+A simple task tracker for family members to manage household tasks and track completion statistics. Deployed on GitHub Pages with Firebase for real-time data sync.
+
+**Live URL**: https://svladis23.github.io/family-tasks
 
 ## Features
 
 - **Daily Tasks**: Recurring tasks that appear every day
-- **Weekly Tasks**: Recurring tasks on specific days of the week
+- **Weekly Tasks**: Recurring tasks on specific days of the week (Sun-Thu work week)
 - **Extra Tasks**: One-time tasks with due dates
 - **Analytics**: Track who's completing more tasks with weekly, monthly, and all-time stats
+- **Real-time sync**: Data syncs across all devices via Firebase
 
 ## Tech Stack
 
-- **Backend**: Python Flask with SQLite database
 - **Frontend**: React with custom CSS (mobile-friendly)
-- **No authentication required** - designed for 2 hardcoded users (Vlad and Maayan)
+- **Database**: Firebase Firestore (cloud-based, real-time sync)
+- **Hosting**: GitHub Pages
+- **Users**: 2 hardcoded users (Vlad and Maayan)
+
+## Setup Instructions
+
+### Step 1: Create a Firebase Project
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Click **"Create a project"**
+3. Enter a project name (e.g., "family-tasks")
+4. Disable Google Analytics (optional) and click **"Create project"**
+
+### Step 2: Create Firestore Database
+
+1. In your Firebase project, go to **"Build"** > **"Firestore Database"**
+2. Click **"Create database"**
+3. Select **"Start in test mode"** (for development)
+4. Choose a location close to you and click **"Enable"**
+
+### Step 3: Get Firebase Config
+
+1. Go to **Project Settings** (gear icon)
+2. Scroll down to **"Your apps"**
+3. Click the web icon (`</>`) to add a web app
+4. Register app with a nickname (e.g., "family-tasks-web")
+5. Copy the `firebaseConfig` object
+
+### Step 4: Update Firebase Config in Code
+
+1. Open `frontend/src/firebase.js`
+2. Replace the placeholder values with your Firebase config:
+
+```javascript
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+```
+
+### Step 5: Install Dependencies and Run Locally
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+The app will open at `http://localhost:3000`
+
+### Step 6: Initialize Sample Data (First Run)
+
+On first load, the app will automatically create sample tasks if the database is empty.
+
+### Step 7: Deploy to GitHub Pages
+
+```bash
+cd frontend
+npm run deploy
+```
+
+This will build the app and push it to the `gh-pages` branch.
+
+### Step 8: Enable GitHub Pages
+
+1. Go to your GitHub repository
+2. Click **Settings** > **Pages**
+3. Under "Source", select **"Deploy from a branch"**
+4. Select branch: **gh-pages** and folder: **/ (root)**
+5. Click **Save**
+
+Your app will be live at: `https://YOUR_USERNAME.github.io/family-tasks`
+
+## Firestore Security Rules (Production)
+
+For production, update your Firestore rules in Firebase Console:
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read/write access to all documents
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+
+**Note**: These rules allow anyone to read/write. For a private family app, this is acceptable. For more security, consider adding Firebase Authentication.
 
 ## Project Structure
 
 ```
 family-tasks/
-├── backend/
-│   ├── app.py           # Flask application with API routes
-│   ├── models.py        # Database models (SQLAlchemy)
-│   └── requirements.txt # Python dependencies
 ├── frontend/
 │   ├── public/
 │   │   └── index.html
 │   ├── src/
+│   │   ├── services/
+│   │   │   └── dataService.js   # Firebase data operations
 │   │   ├── pages/
-│   │   │   ├── TodayPage.js      # Main dashboard
-│   │   │   ├── DailyTasksPage.js # Manage daily tasks
-│   │   │   ├── WeeklyTasksPage.js# Manage weekly tasks
-│   │   │   ├── ExtraTasksPage.js # Manage extra tasks
-│   │   │   └── AnalyticsPage.js  # View statistics
+│   │   │   ├── TodayPage.js     # Main dashboard
+│   │   │   ├── DailyTasksPage.js
+│   │   │   ├── WeeklyTasksPage.js
+│   │   │   ├── ExtraTasksPage.js
+│   │   │   └── AnalyticsPage.js
+│   │   ├── firebase.js          # Firebase config
 │   │   ├── App.js
 │   │   ├── index.js
 │   │   └── index.css
 │   └── package.json
+├── backend/                      # Legacy (not needed with Firebase)
 └── README.md
 ```
 
-## Setup Instructions
+## Firestore Collections
 
-### Backend Setup
-
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-
-2. Create a virtual environment (recommended):
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Run the Flask server:
-   ```bash
-   python app.py
-   ```
-
-   The API will be available at `http://localhost:5000`
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the development server:
-   ```bash
-   npm start
-   ```
-
-   The app will open at `http://localhost:3000`
-
-## API Endpoints
-
-### Users
-- `GET /api/users` - Get all users
-
-### Daily Tasks
-- `GET /api/daily-tasks` - Get all daily tasks
-- `POST /api/daily-tasks` - Create a daily task
-- `PUT /api/daily-tasks/:id` - Update a daily task
-- `DELETE /api/daily-tasks/:id` - Delete a daily task
-
-### Weekly Tasks
-- `GET /api/weekly-tasks` - Get all weekly tasks
-- `POST /api/weekly-tasks` - Create a weekly task
-- `PUT /api/weekly-tasks/:id` - Update a weekly task
-- `DELETE /api/weekly-tasks/:id` - Delete a weekly task
-
-### Extra Tasks
-- `GET /api/extra-tasks` - Get all extra tasks (use `?pending=true` for pending only)
-- `POST /api/extra-tasks` - Create an extra task
-- `PUT /api/extra-tasks/:id` - Update an extra task
-- `DELETE /api/extra-tasks/:id` - Delete an extra task
-- `POST /api/extra-tasks/:id/complete` - Mark an extra task as complete
-
-### Today's Tasks
-- `GET /api/today` - Get all tasks for today with completion status
-
-### Completions
-- `POST /api/completions` - Toggle task completion for a user
-- `GET /api/completions` - Get completions (optional: `?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`)
-
-### Analytics
-- `GET /api/analytics` - Get completion statistics for each user
-
-## Database Schema
-
-```sql
-users:
-- id (primary key)
-- name (text)
-
-daily_tasks:
-- id (primary key)
-- title (text)
-- active (boolean)
-- created_at (timestamp)
-
-weekly_tasks:
-- id (primary key)
-- title (text)
-- days_of_week (text, e.g., "1,3,5" for Sun/Tue/Thu where 1=Sun, 5=Thu)
-- active (boolean)
-- created_at (timestamp)
-
-extra_tasks:
-- id (primary key)
-- title (text)
-- due_date (date)
-- completed (boolean)
-- completed_by_user_id (foreign key)
-- completed_at (timestamp)
-
-task_completions:
-- id (primary key)
-- completion_date (date)
-- task_type (text: 'daily', 'weekly', 'extra')
-- task_id (integer)
-- user_id (foreign key)
-- completed_at (timestamp)
 ```
+dailyTasks:
+- title (string)
+- active (boolean)
+- createdAt (timestamp)
 
-## Seed Data
+weeklyTasks:
+- title (string)
+- days_of_week (string, e.g., "1,3,5" for Sun/Tue/Thu)
+- active (boolean)
+- createdAt (timestamp)
 
-The database is automatically initialized with:
+extraTasks:
+- title (string)
+- dueDate (string, YYYY-MM-DD)
+- completed (boolean)
+- completedByUserId (number, nullable)
+- completedAt (timestamp, nullable)
+- createdAt (timestamp)
 
-**Users:**
-- Vlad (id=1)
-- Maayan (id=2)
-
-**Sample Daily Tasks:**
-- Wash dishes
-- Take vitamins
-- Make bed
-
-**Sample Weekly Tasks:**
-- Take out trash (Sun, Wed)
-- Vacuum living room (Tue, Thu)
-- Water plants (Mon, Wed)
-
-**Note:** Work week is Sunday-Thursday. Friday and Saturday are weekends.
-
-**Sample Extra Tasks:**
-- Fix bathroom sink (today)
-- Organize closet (next week)
+completions:
+- completionDate (string, YYYY-MM-DD)
+- taskType (string: 'daily', 'weekly', 'extra')
+- taskId (string)
+- userId (number)
+- completedAt (timestamp)
+```
 
 ## Usage
 
@@ -187,11 +171,16 @@ The database is automatically initialized with:
 
 2. **Daily Tasks**: Add, edit, or delete recurring daily tasks. Toggle active/inactive status.
 
-3. **Weekly Tasks**: Manage tasks that occur on specific days. Select which days of the week each task should appear.
+3. **Weekly Tasks**: Manage tasks that occur on specific days (Sun-Thu). Select which days each task should appear.
 
 4. **Extra Tasks**: Create one-time tasks with due dates. Click your name to mark as complete.
 
 5. **Analytics**: See who's winning the household task competition with weekly, monthly, and all-time statistics.
+
+## Work Week
+
+- **Work days**: Sunday, Monday, Tuesday, Wednesday, Thursday (1-5)
+- **Weekend**: Friday, Saturday (no tasks)
 
 ## Color Coding
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-
-const API_BASE = '/api';
+import { getAnalytics } from '../services/dataService';
 
 function AnalyticsPage() {
   const [analytics, setAnalytics] = useState(null);
@@ -9,9 +8,7 @@ function AnalyticsPage() {
 
   const fetchAnalytics = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE}/analytics`);
-      if (!response.ok) throw new Error('Failed to fetch analytics');
-      const data = await response.json();
+      const data = await getAnalytics();
       setAnalytics(data);
       setError(null);
     } catch (err) {

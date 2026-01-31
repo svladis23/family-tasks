@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-
-const API_BASE = '/api';
-
-const USERS = [
-  { id: 1, name: 'Vlad', className: 'vlad' },
-  { id: 2, name: 'Maayan', className: 'maayan' }
-];
+import { getExtraTasks, createExtraTask, completeExtraTask, deleteExtraTask, USERS } from '../services/dataService';
 
 function ExtraTasksPage() {
   const [tasks, setTasks] = useState([]);
@@ -17,9 +11,7 @@ function ExtraTasksPage() {
 
   const fetchTasks = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE}/extra-tasks?pending=true`);
-      if (!response.ok) throw new Error('Failed to fetch tasks');
-      const data = await response.json();
+      const data = await getExtraTasks(true);
       setTasks(data);
       setError(null);
     } catch (err) {
@@ -61,17 +53,7 @@ function ExtraTasksPage() {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/extra-tasks`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: formTitle.trim(),
-          due_date: formDueDate
-        })
-      });
-
-      if (!response.ok) throw new Error('Failed to create task');
-
+      await createExtraTask(formTitle.trim(), formDueDate);
       closeModal();
       fetchTasks();
     } catch (err) {
@@ -81,14 +63,7 @@ function ExtraTasksPage() {
 
   const handleComplete = async (taskId, userId) => {
     try {
-      const response = await fetch(`${API_BASE}/extra-tasks/${taskId}/complete`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId })
-      });
-
-      if (!response.ok) throw new Error('Failed to complete task');
-
+      await completeExtraTask(taskId, userId);
       fetchTasks();
     } catch (err) {
       setError(err.message);
@@ -99,12 +74,7 @@ function ExtraTasksPage() {
     if (!window.confirm('Are you sure you want to delete this task?')) return;
 
     try {
-      const response = await fetch(`${API_BASE}/extra-tasks/${taskId}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) throw new Error('Failed to delete task');
-
+      await deleteExtraTask(taskId);
       fetchTasks();
     } catch (err) {
       setError(err.message);
@@ -169,25 +139,25 @@ function ExtraTasksPage() {
                 <span
                   className="type-badge"
                   style={{
-                    backgroundColor: isOverdue(task.due_date) ? '#fee2e2' : isToday(task.due_date) ? '#dcfce7' : '#f3f4f6',
-                    color: isOverdue(task.due_date) ? '#991b1b' : isToday(task.due_date) ? '#166534' : '#374151'
+                    backgroundColor: isOverdue(task.dueDate) ? '#fee2e2' : isToday(task.dueDate) ? '#dcfce7' : '#f3f4f6',
+                    color: isOverdue(task.dueDate) ? '#991b1b' : isToday(task.dueDate) ? '#166534' : '#374151'
                   }}
                 >
-                  {isOverdue(task.due_date) ? 'Overdue' : isToday(task.due_date) ? 'Today' : formatDate(task.due_date)}
+                  {isOverdue(task.dueDate) ? 'Overdue' : isToday(task.dueDate) ? 'Today' : formatDate(task.dueDate)}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray">
-                  Due: {formatDate(task.due_date)}
+                  Due: {formatDate(task.dueDate)}
                 </span>
 
                 <div className="action-buttons">
                   {USERS.map(user => (
                     <button
                       key={user.id}
-                      className={`btn btn-sm ${user.className === 'vlad' ? 'btn-primary' : ''}`}
-                      style={user.className === 'maayan' ? { backgroundColor: '#ec4899', color: 'white' } : {}}
+                      className={`btn btn-sm ${user.id === 1 ? 'btn-primary' : ''}`}
+                      style={user.id === 2 ? { backgroundColor: '#ec4899', color: 'white' } : {}}
                       onClick={() => handleComplete(task.id, user.id)}
                       title={`Mark as done by ${user.name}`}
                     >

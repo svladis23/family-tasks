@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-
-const API_BASE = '/api';
+import { getDailyTasks, createDailyTask, updateDailyTask, deleteDailyTask } from '../services/dataService';
 
 function DailyTasksPage() {
   const [tasks, setTasks] = useState([]);
@@ -12,9 +11,7 @@ function DailyTasksPage() {
 
   const fetchTasks = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE}/daily-tasks`);
-      if (!response.ok) throw new Error('Failed to fetch tasks');
-      const data = await response.json();
+      const data = await getDailyTasks();
       setTasks(data);
       setError(null);
     } catch (err) {
@@ -55,17 +52,11 @@ function DailyTasksPage() {
     }
 
     try {
-      const url = editingTask
-        ? `${API_BASE}/daily-tasks/${editingTask.id}`
-        : `${API_BASE}/daily-tasks`;
-
-      const response = await fetch(url, {
-        method: editingTask ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: formTitle.trim() })
-      });
-
-      if (!response.ok) throw new Error('Failed to save task');
+      if (editingTask) {
+        await updateDailyTask(editingTask.id, { title: formTitle.trim() });
+      } else {
+        await createDailyTask(formTitle.trim());
+      }
 
       closeModal();
       fetchTasks();
@@ -76,14 +67,7 @@ function DailyTasksPage() {
 
   const handleToggleActive = async (task) => {
     try {
-      const response = await fetch(`${API_BASE}/daily-tasks/${task.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ active: !task.active })
-      });
-
-      if (!response.ok) throw new Error('Failed to update task');
-
+      await updateDailyTask(task.id, { active: !task.active });
       fetchTasks();
     } catch (err) {
       setError(err.message);
@@ -94,12 +78,7 @@ function DailyTasksPage() {
     if (!window.confirm('Are you sure you want to delete this task?')) return;
 
     try {
-      const response = await fetch(`${API_BASE}/daily-tasks/${taskId}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) throw new Error('Failed to delete task');
-
+      await deleteDailyTask(taskId);
       fetchTasks();
     } catch (err) {
       setError(err.message);
