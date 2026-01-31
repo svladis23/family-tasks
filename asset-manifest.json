@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/family-tasks/static/css/main.bedf269a.css",
+    "main.js": "/family-tasks/static/js/main.8e0db885.js",
+    "index.html": "/family-tasks/index.html",
+    "main.bedf269a.css.map": "/family-tasks/static/css/main.bedf269a.css.map",
+    "main.8e0db885.js.map": "/family-tasks/static/js/main.8e0db885.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.bedf269a.css",
+    "static/js/main.8e0db885.js"
+  ]
+}
